@@ -269,7 +269,14 @@
             <div class="start-subtitle">
                 Responda corretamente às 10 perguntas sobre códigos de modulação e comunicação.
                 <br><br>
-                Cada resposta correta vale pontos! Você está preparado?
+                Cada resposta correta vale 5 pontos! Cada resposta incorreta perde 10 pontos.
+                <br><br>
+                Acumule pontos para subir de patente! Comece como Recruta e alcance o cargo de Chefe de Polícia!
+            </div>
+            
+            <div class="name-input-container">
+                <label for="playerNameInput">Qual é o seu nome, policial?</label>
+                <input type="text" id="playerNameInput" placeholder="Digite seu nome" class="player-name-input">
             </div>
             
             <div class="buttons">
@@ -393,6 +400,22 @@
             let score = 0;
             let lives = 3;
             let answered = false;
+            let playerName = "";
+            let currentLevel = 0;
+            
+            // Police ranks
+            const policeRanks = [
+                { name: "Recruta", points: 0 },
+                { name: "Soldado", points: 100 },
+                { name: "Cabo", points: 150 },
+                { name: "Sargento", points: 200 },
+                { name: "Tenente", points: 250 },
+                { name: "Capitão", points: 300 },
+                { name: "Major", points: 350 },
+                { name: "Coronel", points: 400 },
+                { name: "Delegado", points: 450 },
+                { name: "Chefe de Polícia", points: 500 }
+            ];
             
             // DOM Elements
             const startScreen = document.getElementById('startScreen');
