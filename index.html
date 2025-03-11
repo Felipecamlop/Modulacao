@@ -1,0 +1,45 @@
+score = 0;
+                currentRankIndex = 0;
+                questionsAnswered = 0;
+                
+                scoreElement.textContent = Pontuação: ${score};
+                updateRank();
+                
+                resultScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                
+                loadQuestion();
+            }
+            
+            function returnToHome() {
+                gameScreen.classList.add('hidden');
+                resultScreen.classList.add('hidden');
+                startScreen.classList.remove('hidden');
+                playerNameInput.value = playerName;
+            }
+            
+            function createConfetti() {
+                const confettiCount = 100;
+                const colors = ['#ffc107', '#f44336', '#2196f3', '#4caf50', '#9c27b0', '#ff9800'];
+                
+                for (let i = 0; i < confettiCount; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = ${Math.random() * 100}vw;
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = ${Math.random() * 10 + 5}px;
+                    confetti.style.height = confetti.style.width;
+                    confetti.style.animationDuration = ${Math.random() * 3 + 2}s;
+                    confetti.style.animationDelay = ${Math.random() * 2}s;
+                    
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
