@@ -1,21 +1,554 @@
-score = 0;
-                currentRankIndex = 0;
-                questionsAnswered = 0;
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Código Modulação</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0d47a1, #1976d2);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+        
+        .game-container {
+            width: 90%;
+            max-width: 900px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffc107;
+            text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #e0e0e0;
+        }
+        
+        .game-area {
+            background-color: rgba(25, 118, 210, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .question-counter {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #ffc107;
+        }
+        
+        .question {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .option {
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 2px solid #1976d2;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            background-color: rgba(25, 118, 210, 0.5);
+            transform: scale(1.02);
+        }
+        
+        .option.correct {
+            background-color: rgba(76, 175, 80, 0.7);
+            border-color: #4caf50;
+        }
+        
+        .option.incorrect {
+            background-color: rgba(244, 67, 54, 0.7);
+            border-color: #f44336;
+        }
+        
+        .option-letter {
+            background-color: #1976d2;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .option-text {
+            text-align: left;
+            flex: 1;
+        }
+        
+        .progress-container {
+            margin-top: 20px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #ffc107;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .scoreboard {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .score, .lives {
+            font-size: 1.2rem;
+        }
+        
+        .lives {
+            color: #f44336;
+        }
+        
+        .score {
+            color: #ffc107;
+        }
+        
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #ffc107;
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            background-color: #ffca28;
+            transform: scale(1.05);
+        }
+        
+        .btn-secondary {
+            background-color: #e0e0e0;
+            color: #000;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #f5f5f5;
+            transform: scale(1.05);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .result-screen {
+            text-align: center;
+        }
+        
+        .result-title {
+            font-size: 2.5rem;
+            color: #ffc107;
+            margin-bottom: 20px;
+        }
+        
+        .result-score {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .result-message {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ffc107;
+            border-radius: 50%;
+            animation: confetti-fall 5s linear infinite;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .start-screen {
+            text-align: center;
+        }
+        
+        .start-title {
+            font-size: 2.5rem;
+            color: #ffc107;
+            margin-bottom: 20px;
+        }
+        
+        .start-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Start Screen -->
+        <div class="start-screen" id="startScreen">
+            <div class="logo">CÓDIGO MODULAÇÃO</div>
+            <div class="subtitle">Teste seus conhecimentos em códigos de comunicação</div>
+            
+            <div class="start-subtitle">
+                Responda corretamente às 10 perguntas sobre códigos de modulação e comunicação.
+                <br><br>
+                Cada resposta correta vale pontos! Você está preparado?
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary" id="startBtn">INICIAR JOGO</button>
+            </div>
+        </div>
+        
+        <!-- Game Screen -->
+        <div class="game-screen hidden" id="gameScreen">
+            <div class="logo">CÓDIGO MODULAÇÃO</div>
+            <div class="subtitle">Teste seus conhecimentos em códigos de comunicação</div>
+            
+            <div class="game-area">
+                <div class="question-counter" id="questionCounter">Pergunta 1/10</div>
+                <div class="question" id="question">O que significa QRR?</div>
                 
-                scoreElement.textContent = Pontuação: ${score};
-                updateRank();
+                <div class="options" id="options">
+                    <div class="option" data-index="0">
+                        <div class="option-letter">A</div>
+                        <div class="option-text">Na escuta</div>
+                    </div>
+                    <div class="option" data-index="1">
+                        <div class="option-letter">B</div>
+                        <div class="option-text">Preciso de reforço</div>
+                    </div>
+                    <div class="option" data-index="2">
+                        <div class="option-letter">C</div>
+                        <div class="option-text">Mensagem recebida</div>
+                    </div>
+                    <div class="option" data-index="3">
+                        <div class="option-letter">D</div>
+                        <div class="option-text">Policial ferido</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <div class="scoreboard">
+                <div class="score" id="score">Pontuação: 0</div>
+                <div class="lives" id="lives">Vidas: 3</div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary hidden" id="nextBtn">PRÓXIMA PERGUNTA</button>
+            </div>
+        </div>
+        
+        <!-- Result Screen -->
+        <div class="result-screen hidden" id="resultScreen">
+            <div class="result-title">RESULTADO FINAL</div>
+            <div class="result-score" id="finalScore">Pontuação: 0</div>
+            <div class="result-message" id="resultMessage">Parabéns! Você completou o jogo!</div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary" id="playAgainBtn">JOGAR NOVAMENTE</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game data
+            const questions = [
+                {
+                    question: "O que significa QRZ?",
+                    options: ["Quem está chamando?", "Estou ocupado", "Repita a mensagem", "Interferência na frequência"],
+                    correctIndex: 0
+                },
+                {
+                    question: "O que significa QSL?",
+                    options: ["Aguarde sua vez", "Mensagem recebida e entendida", "Troque de frequência", "Teste de sinal"],
+                    correctIndex: 1
+                },
+                {
+                    question: "O que significa QTH?",
+                    options: ["Horário local", "Situação crítica", "Qual sua localização?", "Tempo estimado de chegada"],
+                    correctIndex: 2
+                },
+                {
+                    question: "O que significa QAP?",
+                    options: ["Retorno em breve", "Estou na escuta", "Mensagem urgente", "Sinal fraco"],
+                    correctIndex: 1
+                },
+                {
+                    question: "O que significa QRM?",
+                    options: ["Sinal forte", "Interferência na transmissão", "Mensagem encerrada", "Comunicação direta"],
+                    correctIndex: 1
+                },
+                {
+                    question: "O que significa QRR?",
+                    options: ["Socorro/emergência", "Atenção a todos", "Repita apenas números", "Estou em movimento"],
+                    correctIndex: 0
+                },
+                {
+                    question: "O que significa QTA?",
+                    options: ["Teste de transmissão", "Cancelamento de mensagem", "Alta prioridade", "Troca de operador"],
+                    correctIndex: 1
+                },
+                {
+                    question: "O que significa QRA?",
+                    options: ["Aguarde confirmação", "Qual o nome da sua estação?", "Resposta afirmativa", "Frequência reservada"],
+                    correctIndex: 1
+                },
+                {
+                    question: "O que significa TKS ou TNX?",
+                    options: ["Terminado", "Transmitindo agora", "Obrigado", "Teste concluído"],
+                    correctIndex: 2
+                },
+                {
+                    question: "O que significa QRV?",
+                    options: ["Tenho problemas técnicos", "Estou pronto/disponível", "Verificação de rotina", "Mensagem prioritária"],
+                    correctIndex: 1
+                }
+            ];
+            
+            // Game variables
+            let currentQuestion = 0;
+            let score = 0;
+            let lives = 3;
+            let answered = false;
+            
+            // DOM Elements
+            const startScreen = document.getElementById('startScreen');
+            const gameScreen = document.getElementById('gameScreen');
+            const resultScreen = document.getElementById('resultScreen');
+            const questionCounter = document.getElementById('questionCounter');
+            const questionElement = document.getElementById('question');
+            const optionsContainer = document.getElementById('options');
+            const progressBar = document.getElementById('progressBar');
+            const scoreElement = document.getElementById('score');
+            const livesElement = document.getElementById('lives');
+            const nextBtn = document.getElementById('nextBtn');
+            const finalScoreElement = document.getElementById('finalScore');
+            const resultMessageElement = document.getElementById('resultMessage');
+            
+            // Buttons
+            const startBtn = document.getElementById('startBtn');
+            const playAgainBtn = document.getElementById('playAgainBtn');
+            
+            // Event Listeners
+            startBtn.addEventListener('click', startGame);
+            nextBtn.addEventListener('click', nextQuestion);
+            playAgainBtn.addEventListener('click', resetGame);
+            
+            // Functions
+            function startGame() {
+                startScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                loadQuestion();
+            }
+            
+            function loadQuestion() {
+                answered = false;
+                nextBtn.classList.add('hidden');
+                
+                const question = questions[currentQuestion];
+                questionCounter.textContent = `Pergunta ${currentQuestion + 1}/${questions.length}`;
+                questionElement.textContent = question.question;
+                
+                // Update progress bar
+                progressBar.style.width = `${(currentQuestion / questions.length) * 100}%`;
+                
+                // Clear previous options
+                while (optionsContainer.firstChild) {
+                    optionsContainer.removeChild(optionsContainer.firstChild);
+                }
+                
+                // Add new options
+                const letters = ['A', 'B', 'C', 'D'];
+                question.options.forEach((option, index) => {
+                    const optionElement = document.createElement('div');
+                    optionElement.className = 'option';
+                    optionElement.dataset.index = index;
+                    
+                    const optionLetter = document.createElement('div');
+                    optionLetter.className = 'option-letter';
+                    optionLetter.textContent = letters[index];
+                    
+                    const optionText = document.createElement('div');
+                    optionText.className = 'option-text';
+                    optionText.textContent = option;
+                    
+                    optionElement.appendChild(optionLetter);
+                    optionElement.appendChild(optionText);
+                    optionsContainer.appendChild(optionElement);
+                    
+                    optionElement.addEventListener('click', () => selectOption(index));
+                });
+            }
+            
+            function selectOption(index) {
+                if (answered) return;
+                
+                answered = true;
+                const question = questions[currentQuestion];
+                const options = document.querySelectorAll('.option');
+                
+                // Show correct and incorrect answers
+                options.forEach(option => {
+                    const optionIndex = parseInt(option.dataset.index);
+                    if (optionIndex === question.correctIndex) {
+                        option.classList.add('correct');
+                    } else if (optionIndex === index && optionIndex !== question.correctIndex) {
+                        option.classList.add('incorrect');
+                    }
+                });
+                
+                // Update score and lives
+                if (index === question.correctIndex) {
+                    // Correct answer
+                    score += 100;
+                    scoreElement.textContent = `Pontuação: ${score}`;
+                } else {
+                    // Incorrect answer
+                    lives--;
+                    livesElement.textContent = `Vidas: ${lives}`;
+                    
+                    if (lives <= 0) {
+                        setTimeout(endGame, 1500);
+                        return;
+                    }
+                }
+                
+                // Show next button or end game
+                if (currentQuestion < questions.length - 1) {
+                    nextBtn.classList.remove('hidden');
+                } else {
+                    setTimeout(endGame, 1500);
+                }
+            }
+            
+            function nextQuestion() {
+                currentQuestion++;
+                loadQuestion();
+            }
+            
+            function endGame() {
+                gameScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+                
+                finalScoreElement.textContent = `Pontuação: ${score}`;
+                
+                // Set result message based on score
+                let message = '';
+                const maxScore = questions.length * 100;
+                const percentage = (score / maxScore) * 100;
+                
+                if (percentage === 100) {
+                    message = 'Perfeito! Você é um especialista em códigos de comunicação!';
+                    createConfetti();
+                } else if (percentage >= 80) {
+                    message = 'Excelente! Você domina muito bem os códigos de comunicação!';
+                    createConfetti();
+                } else if (percentage >= 60) {
+                    message = 'Bom trabalho! Você conhece bem os códigos de comunicação.';
+                } else if (percentage >= 40) {
+                    message = 'Razoável. Você tem conhecimentos básicos sobre códigos de comunicação.';
+                } else {
+                    message = 'Você precisa praticar mais. Continue estudando os códigos de comunicação!';
+                }
+                
+                resultMessageElement.textContent = message;
+            }
+            
+            function resetGame() {
+                currentQuestion = 0;
+                score = 0;
+                lives = 3;
+                
+                scoreElement.textContent = `Pontuação: ${score}`;
+                livesElement.textContent = `Vidas: ${lives}`;
                 
                 resultScreen.classList.add('hidden');
                 gameScreen.classList.remove('hidden');
                 
                 loadQuestion();
-            }
-            
-            function returnToHome() {
-                gameScreen.classList.add('hidden');
-                resultScreen.classList.add('hidden');
-                startScreen.classList.remove('hidden');
-                playerNameInput.value = playerName;
             }
             
             function createConfetti() {
@@ -25,12 +558,12 @@ score = 0;
                 for (let i = 0; i < confettiCount; i++) {
                     const confetti = document.createElement('div');
                     confetti.className = 'confetti';
-                    confetti.style.left = ${Math.random() * 100}vw;
+                    confetti.style.left = `${Math.random() * 100}vw`;
                     confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.width = ${Math.random() * 10 + 5}px;
+                    confetti.style.width = `${Math.random() * 10 + 5}px`;
                     confetti.style.height = confetti.style.width;
-                    confetti.style.animationDuration = ${Math.random() * 3 + 2}s;
-                    confetti.style.animationDelay = ${Math.random() * 2}s;
+                    confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                    confetti.style.animationDelay = `${Math.random() * 2}s`;
                     
                     document.body.appendChild(confetti);
                     
