@@ -1,601 +1,494 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Código Modulação</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #0d47a1, #1976d2);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-        }
-        
-        .game-container {
-            width: 90%;
-            max-width: 900px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            text-align: center;
-        }
-        
-        .logo {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #ffc107;
-            text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
-        }
-        
-        .subtitle {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            color: #e0e0e0;
-        }
-        
-        .game-area {
-            background-color: rgba(25, 118, 210, 0.3);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .question-counter {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            color: #ffc107;
-        }
-        
-        .question {
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-            background-color: rgba(0, 0, 0, 0.4);
-            padding: 15px;
-            border-radius: 10px;
-        }
-        
-        .options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        
-        .option {
-            background-color: rgba(0, 0, 0, 0.4);
-            border: 2px solid #1976d2;
-            border-radius: 10px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-        }
-        
-        .option:hover {
-            background-color: rgba(25, 118, 210, 0.5);
-            transform: scale(1.02);
-        }
-        
-        .option.correct {
-            background-color: rgba(76, 175, 80, 0.7);
-            border-color: #4caf50;
-        }
-        
-        .option.incorrect {
-            background-color: rgba(244, 67, 54, 0.7);
-            border-color: #f44336;
-        }
-        
-        .option-letter {
-            background-color: #1976d2;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 10px;
-            font-weight: bold;
-        }
-        
-        .option-text {
-            text-align: left;
-            flex: 1;
-        }
-        
-        .progress-container {
-            margin-top: 20px;
-            background-color: rgba(0, 0, 0, 0.4);
-            border-radius: 10px;
-            height: 20px;
-            overflow: hidden;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            background-color: #ffc107;
-            width: 0%;
-            transition: width 0.5s;
-        }
-        
-        .scoreboard {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            background-color: rgba(0, 0, 0, 0.4);
-            padding: 15px;
-            border-radius: 10px;
-        }
-        
-        .score, .lives {
-            font-size: 1.2rem;
-        }
-        
-        .lives {
-            color: #f44336;
-        }
-        
-        .score {
-            color: #ffc107;
-        }
-        
-        .buttons {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-primary {
-            background-color: #ffc107;
-            color: #000;
-        }
-        
-        .btn-primary:hover {
-            background-color: #ffca28;
-            transform: scale(1.05);
-        }
-        
-        .btn-secondary {
-            background-color: #e0e0e0;
-            color: #000;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #f5f5f5;
-            transform: scale(1.05);
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .result-screen {
-            text-align: center;
-        }
-        
-        .result-title {
-            font-size: 2.5rem;
-            color: #ffc107;
-            margin-bottom: 20px;
-        }
-        
-        .result-score {
-            font-size: 2rem;
-            margin-bottom: 15px;
-        }
-        
-        .result-message {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-        }
-        
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #ffc107;
-            border-radius: 50%;
-            animation: confetti-fall 5s linear infinite;
-        }
-        
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-        
-        .start-screen {
-            text-align: center;
-        }
-        
-        .start-title {
-            font-size: 2.5rem;
-            color: #ffc107;
-            margin-bottom: 20px;
-        }
-        
-        .start-subtitle {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-        }
-        
-        @media (max-width: 768px) {
-            .options {
-                grid-template-columns: 1fr;
-            }
-            
-            .logo {
-                font-size: 2rem;
-            }
-        }
-    </style>
+    <title>Quiz Dragon Ball</title>
 </head>
 <body>
-    <div class="game-container">
-        <!-- Start Screen -->
-        <div class="start-screen" id="startScreen">
-            <div class="logo">CÓDIGO MODULAÇÃO</div>
-            <div class="subtitle">Teste seus conhecimentos em códigos de comunicação</div>
-            
-            <div class="start-subtitle">
-                Responda corretamente às 10 perguntas sobre códigos de modulação e comunicação.
-                <br><br>
-                Cada resposta correta vale 5 pontos! Cada resposta incorreta perde 10 pontos.
-                <br><br>
-                Acumule pontos para subir de patente! Comece como Recruta e alcance o cargo de Chefe de Polícia!
-            </div>
-            
-            <div class="name-input-container">
-                <label for="playerNameInput">Qual é o seu nome, policial?</label>
-                <input type="text" id="playerNameInput" placeholder="Digite seu nome" class="player-name-input">
-            </div>
-            
-            <div class="buttons">
-                <button class="btn btn-primary" id="startBtn">INICIAR JOGO</button>
-            </div>
-        </div>
-        
-        <!-- Game Screen -->
-        <div class="game-screen hidden" id="gameScreen">
-            <div class="logo">CÓDIGO MODULAÇÃO</div>
-            <div class="subtitle">Teste seus conhecimentos em códigos de comunicação</div>
-            
-            <div class="game-area">
-                <div class="question-counter" id="questionCounter">Pergunta 1/10</div>
-                <div class="question" id="question">O que significa QRR?</div>
-                
-                <div class="options" id="options">
-                    <div class="option" data-index="0">
-                        <div class="option-letter">A</div>
-                        <div class="option-text">Na escuta</div>
-                    </div>
-                    <div class="option" data-index="1">
-                        <div class="option-letter">B</div>
-                        <div class="option-text">Preciso de reforço</div>
-                    </div>
-                    <div class="option" data-index="2">
-                        <div class="option-letter">C</div>
-                        <div class="option-text">Mensagem recebida</div>
-                    </div>
-                    <div class="option" data-index="3">
-                        <div class="option-letter">D</div>
-                        <div class="option-text">Policial ferido</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            
-            <div class="scoreboard">
-                <div class="score" id="score">Pontuação: 0</div>
-                <div class="lives" id="lives">Vidas: 3</div>
-            </div>
-            
-            <div class="buttons">
-                <button class="btn btn-primary hidden" id="nextBtn">PRÓXIMA PERGUNTA</button>
-            </div>
-        </div>
-        
-        <!-- Result Screen -->
-        <div class="result-screen hidden" id="resultScreen">
-            <div class="result-title">RESULTADO FINAL</div>
-            <div class="result-score" id="finalScore">Pontuação: 0</div>
-            <div class="result-message" id="resultMessage">Parabéns! Você completou o jogo!</div>
-            
-            <div class="buttons">
-                <button class="btn btn-primary" id="playAgainBtn">JOGAR NOVAMENTE</button>
-            </div>
-        </div>
-    </div>
-    
+    <center>
+        <table width="90%" cellpadding="20" cellspacing="0" border="0">
+            <tr>
+                <td align="center">
+                    <header>
+                        <h1>🐉 Quiz Dragon Ball</h1>
+                        <hr width="50%">
+                        <nav>
+                            <table cellpadding="10" cellspacing="10">
+                                <tr>
+                                    <td><button onclick="iniciarJogo()"><big><b>🎮 Jogar</b></big></button></td>
+                                    <td><button onclick="mostrarSobre()"><big><b>ℹ️ Sobre</b></big></button></td>
+                                </tr>
+                            </table>
+                        </nav>
+                        <hr width="50%">
+                    </header>
+
+                    <main>
+                        <div id="menu-inicial">
+                            <table cellpadding="15" cellspacing="0" border="1" width="100%">
+                                <tr bgcolor="#E6F3FF">
+                                    <td align="center">
+                                        <h2>🎯 Bem-vindo ao Quiz Dragon Ball!</h2>
+                                        <p><big>Teste seus conhecimentos sobre o universo Dragon Ball!</big></p>
+                                        <p><i>Clique em "Jogar" no menu acima para começar.</i></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div id="jogo" style="display: none;">
+                            <table cellpadding="10" cellspacing="0" border="1" width="100%">
+                                <tr bgcolor="#E6F3FF">
+                                    <td align="center">
+                                        <h3>🏆 Pontos: <span id="pontos">0</span></h3>
+                                    </td>
+                                </tr>
+                            </table>
+                            <br>
+                            
+                            <div id="pergunta-container">
+                                <table cellpadding="15" cellspacing="0" border="2" width="100%">
+                                    <tr bgcolor="#F0F8FF">
+                                        <td align="center">
+                                            <h2 id="pergunta-texto"></h2>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <br>
+                                <form id="form-pergunta">
+                                    <fieldset>
+                                        <legend><b>🤔 Escolha sua resposta:</b></legend>
+                                        <table cellpadding="8" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td align="left">
+                                                    <ol id="alternativas">
+                                                    </ol>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <br>
+                                        <button type="button" id="btn-responder" onclick="responder()" style="display: none;"><big><b>✅ Responder</b></big></button>
+                                    </fieldset>
+                                </form>
+                            </div>
+
+                            <div id="resultado" style="display: none;">
+                                <br>
+                                <table cellpadding="15" cellspacing="0" border="2" width="100%">
+                                    <tr bgcolor="#F5F5F5">
+                                        <td align="center">
+                                            <h3 id="mensagem-resultado"></h3>
+                                            <button type="button" id="btn-proxima" onclick="proximaPergunta()" style="display: none;"><big><b>➡️ Próxima Pergunta</b></big></button>
+                                            <button type="button" id="btn-jogar-novamente" onclick="jogarNovamente()" style="display: none;"><big><b>🔄 Jogar Novamente</b></big></button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="sobre" style="display: none;">
+                            <table cellpadding="20" cellspacing="0" border="2" width="100%">
+                                <tr bgcolor="#E6F3FF">
+                                    <td align="center">
+                                        <h2>ℹ️ Sobre o Quiz</h2>
+                                    </td>
+                                </tr>
+                                <tr bgcolor="#F0F8FF">
+                                    <td align="center">
+                                        <blockquote>
+                                            <p><big><i>O site está em fase beta, ele ganhará atualizações aumentando a quantidade de perguntas e futuramente ganhará mais modalidades de temas a se jogar.</i></big></p>
+                                        </blockquote>
+                                        <br>
+                                        <button onclick="voltarMenu()"><big><b>🏠 Voltar ao Menu</b></big></button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </main>
+
+                    <footer>
+                        <br><br>
+                        <hr width="50%">
+                        <p><small><i>🐲 Quiz Dragon Ball - Versão HTML Pura</i></small></p>
+                    </footer>
+                </td>
+            </tr>
+        </table>
+    </center>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Game data
-            const questions = [
-                {
-                    question: "O que significa QRZ?",
-                    options: ["Quem está chamando?", "Estou ocupado", "Repita a mensagem", "Interferência na frequência"],
-                    correctIndex: 0
-                },
-                {
-                    question: "O que significa QSL?",
-                    options: ["Aguarde sua vez", "Mensagem recebida e entendida", "Troque de frequência", "Teste de sinal"],
-                    correctIndex: 1
-                },
-                {
-                    question: "O que significa QTH?",
-                    options: ["Horário local", "Situação crítica", "Qual sua localização?", "Tempo estimado de chegada"],
-                    correctIndex: 2
-                },
-                {
-                    question: "O que significa QAP?",
-                    options: ["Retorno em breve", "Estou na escuta", "Mensagem urgente", "Sinal fraco"],
-                    correctIndex: 1
-                },
-                {
-                    question: "O que significa QRM?",
-                    options: ["Sinal forte", "Interferência na transmissão", "Mensagem encerrada", "Comunicação direta"],
-                    correctIndex: 1
-                },
-                {
-                    question: "O que significa QRR?",
-                    options: ["Socorro/emergência", "Atenção a todos", "Repita apenas números", "Estou em movimento"],
-                    correctIndex: 0
-                },
-                {
-                    question: "O que significa QTA?",
-                    options: ["Teste de transmissão", "Cancelamento de mensagem", "Alta prioridade", "Troca de operador"],
-                    correctIndex: 1
-                },
-                {
-                    question: "O que significa QRA?",
-                    options: ["Aguarde confirmação", "Qual o nome da sua estação?", "Resposta afirmativa", "Frequência reservada"],
-                    correctIndex: 1
-                },
-                {
-                    question: "O que significa TKS ou TNX?",
-                    options: ["Terminado", "Transmitindo agora", "Obrigado", "Teste concluído"],
-                    correctIndex: 2
-                },
-                {
-                    question: "O que significa QRV?",
-                    options: ["Tenho problemas técnicos", "Estou pronto/disponível", "Verificação de rotina", "Mensagem prioritária"],
-                    correctIndex: 1
-                }
-            ];
-            
-            // Game variables
-            let currentQuestion = 0;
-            let score = 0;
-            let lives = 3;
-            let answered = false;
-            let playerName = "";
-            let currentLevel = 0;
-            
-            // Police ranks
-            const policeRanks = [
-                { name: "Recruta", points: 0 },
-                { name: "Soldado", points: 100 },
-                { name: "Cabo", points: 150 },
-                { name: "Sargento", points: 200 },
-                { name: "Tenente", points: 250 },
-                { name: "Capitão", points: 300 },
-                { name: "Major", points: 350 },
-                { name: "Coronel", points: 400 },
-                { name: "Delegado", points: 450 },
-                { name: "Chefe de Polícia", points: 500 }
-            ];
-            
-            // DOM Elements
-            const startScreen = document.getElementById('startScreen');
-            const gameScreen = document.getElementById('gameScreen');
-            const resultScreen = document.getElementById('resultScreen');
-            const questionCounter = document.getElementById('questionCounter');
-            const questionElement = document.getElementById('question');
-            const optionsContainer = document.getElementById('options');
-            const progressBar = document.getElementById('progressBar');
-            const scoreElement = document.getElementById('score');
-            const livesElement = document.getElementById('lives');
-            const nextBtn = document.getElementById('nextBtn');
-            const finalScoreElement = document.getElementById('finalScore');
-            const resultMessageElement = document.getElementById('resultMessage');
-            
-            // Buttons
-            const startBtn = document.getElementById('startBtn');
-            const playAgainBtn = document.getElementById('playAgainBtn');
-            
-            // Event Listeners
-            startBtn.addEventListener('click', startGame);
-            nextBtn.addEventListener('click', nextQuestion);
-            playAgainBtn.addEventListener('click', resetGame);
-            
-            // Functions
-            function startGame() {
-                startScreen.classList.add('hidden');
-                gameScreen.classList.remove('hidden');
-                loadQuestion();
+        // Banco de perguntas
+        const perguntas = [
+            {
+                pergunta: "Quem mata o Vegeta pela primeira vez?",
+                alternativas: ["Majin Boo", "Goku", "Freeza", "Cell"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual o verdadeiro nome do Goku, revelado por Raditz?",
+                alternativas: ["Bardock", "Kakarotto", "Turles", "Goten"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual personagem foi inspirado em empresários gananciosos dos anos 80?",
+                alternativas: ["Cell", "Freeza", "Dabura", "Vegeta"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual personagem nunca morreu em toda a série Dragon Ball Z?",
+                alternativas: ["Kuririn", "Goku", "Mr. Satan", "Yamcha"],
+                correta: 2
+            },
+            {
+                pergunta: "Quem foi o primeiro personagem a atingir o Super Saiyajin 2?",
+                alternativas: ["Vegeta", "Trunks do Futuro", "Goku", "Gohan"],
+                correta: 3
+            },
+            {
+                pergunta: "Qual dessas personagens é dublada pela mesma pessoa que faz a voz do Goku no Japão?",
+                alternativas: ["Vegeta", "Gohan", "Kuririn", "Piccolo"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual desses vilões não foi originalmente planejado e só surgiu por sugestão do editor?",
+                alternativas: ["Cell", "Freeza", "Nappa", "Dodoria"],
+                correta: 0
+            },
+            {
+                pergunta: "Quem é o pai da Pan, personagem introduzida no final da série?",
+                alternativas: ["Vegeta", "Trunks", "Gohan", "Yamcha"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual técnica foi batizada pela esposa de Akira Toriyama?",
+                alternativas: ["Genki Dama", "Kamehameha", "Galick Gun", "Makankosappo"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual a explicação de Vegeta para o cabelo dos Saiyajins não mudar com o tempo?",
+                alternativas: ["Herança genética fraca", "Energia ki estabilizadora", "Eles cortam regularmente", "Cabelo de Saiyajin não cresce"],
+                correta: 3
+            },
+            {
+                pergunta: "Qual o nome do planeta natal dos Saiyajins?",
+                alternativas: ["Namekusei", "Terra", "Planeta Vegeta", "Yardrat"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual desses personagens foi inspirado em Bruce Lee para movimentos e visual?",
+                alternativas: ["Trunks", "Goku em Super Saiyajin", "Kuririn", "Cell"],
+                correta: 1
+            },
+            {
+                pergunta: "Quem foi o primeiro vilão que os Guerreiros Z enfrentaram em Dragon Ball Z?",
+                alternativas: ["Nappa", "Freeza", "Cell", "Raditz"],
+                correta: 3
+            },
+            {
+                pergunta: "Quantos episódios durou a luta de Goku contra Freeza no anime?",
+                alternativas: ["8", "19", "3", "12"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual destes personagens é um dos pets do Senhor Kaio?",
+                alternativas: ["Oolong", "Bubbles", "Yajirobe", "Mr. Popo"],
+                correta: 1
+            },
+            {
+                pergunta: "Quem foi o primeiro a descobrir a fraqueza de Nappa durante a invasão à Terra?",
+                alternativas: ["Goku", "Kuririn", "Piccolo", "Tenshinhan"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual destes personagens é filho do Rei Vegeta?",
+                alternativas: ["Raditz", "Vegeta", "Broly", "Tarble"],
+                correta: 1
+            },
+            {
+                pergunta: "Quem foi o personagem que usou a técnica 'Bakuhatsuha' para destruir uma cidade?",
+                alternativas: ["Cell", "Vegeta", "Nappa", "Zarbon"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual desses personagens aparece como cyborg em um episódio filler?",
+                alternativas: ["Yamcha", "Tao Pai Pai", "Mr. Satan", "Yajirobe"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual o personagem que alegou estar com câimbra para não lutar contra Cell?",
+                alternativas: ["Mr. Satan", "Tenshinhan", "Kuririn", "Goku"],
+                correta: 0
+            },
+            {
+                pergunta: "Quem foi o primeiro personagem a morrer em Dragon Ball Z?",
+                alternativas: ["Goku", "Piccolo", "Raditz", "Kuririn"],
+                correta: 0
+            },
+            {
+                pergunta: "Qual é o nome verdadeiro de Mr. Satan?",
+                alternativas: ["Satan", "Dabra", "Mark", "Buu"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual dessas personagens é filha de Gohan e Videl?",
+                alternativas: ["Bra", "Marron", "Pan", "Launch"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual dos personagens abaixo foi transformado em pedra por Dabura?",
+                alternativas: ["Vegeta", "Piccolo", "Goten", "Goku"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual é o golpe mais famoso de Goku?",
+                alternativas: ["Galick Gun", "Final Flash", "Makankosappo", "Kamehameha"],
+                correta: 3
+            },
+            {
+                pergunta: "Quem vence o torneio infantil de artes marciais no final da saga Boo?",
+                alternativas: ["Goten", "Uub", "Trunks", "Marron"],
+                correta: 2
+            },
+            {
+                pergunta: "Quantos episódios tem a série Dragon Ball Z?",
+                alternativas: ["263", "151", "291", "312"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual desses personagens se funde com Kami?",
+                alternativas: ["Goku", "Piccolo", "Nail", "Vegeta"],
+                correta: 1
+            },
+            {
+                pergunta: "O que faz com que Garlic Jr. escape da Zona da Morte?",
+                alternativas: ["Poder do Kaioshin", "Esferas do Dragão", "Makyo Star", "Intervenção de Gohan"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual é a raça do Freeza?",
+                alternativas: ["Saiyajin", "Arcosiano", "Namekuseijin", "Demônio do Frio"],
+                correta: 1
+            },
+            {
+                pergunta: "Quem foi o primeiro personagem a usar a técnica de fusão por brincadeira?",
+                alternativas: ["Vegeta", "Goku", "Trunks e Goten", "Kuririn e Yamcha"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual desses personagens foi inicialmente um vilão e virou aliado?",
+                alternativas: ["Cell", "Piccolo", "Freeza", "Dabura"],
+                correta: 1
+            },
+            {
+                pergunta: "Quem destrói o Planeta Vegeta?",
+                alternativas: ["Bardock", "Freeza", "Goku", "Broly"],
+                correta: 1
+            },
+            {
+                pergunta: "Quantos dias Goku treinou com o Senhor Kaio?",
+                alternativas: ["44 dias", "100 dias", "88 dias", "1 ano"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual o nome do planeta onde vivem os Kaioh?",
+                alternativas: ["Planeta Supremo", "Planeta do Senhor Kaio", "Yadrat", "Yardrat"],
+                correta: 1
+            },
+            {
+                pergunta: "Quem foi o primeiro personagem a transformar-se em Super Saiyajin 3?",
+                alternativas: ["Gohan", "Gotenks", "Goku", "Vegeta"],
+                correta: 2
+            },
+            {
+                pergunta: "O que significa o nome 'Videl'?",
+                alternativas: ["Filha do diabo", "Pequena guerreira", "Justiça pura", "Poder gentil"],
+                correta: 0
+            },
+            {
+                pergunta: "Qual destes personagens já foi namorado da Bulma?",
+                alternativas: ["Kuririn", "Yamcha", "Vegeta", "Tenshinhan"],
+                correta: 1
+            },
+            {
+                pergunta: "Quem derrota Cell definitivamente?",
+                alternativas: ["Goku", "Vegeta", "Gohan", "Trunks do Futuro"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual personagem apareceu pela primeira vez ao sair de uma nave vinda do espaço?",
+                alternativas: ["Raditz", "Nappa", "Goku", "Gotenks"],
+                correta: 0
+            },
+            {
+                pergunta: "Quem foi o primeiro a usar o golpe 'Galick Gun'?",
+                alternativas: ["Goku", "Vegeta", "Freeza", "Nappa"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual é a relação entre Bibidi, Babidi e Buu?",
+                alternativas: ["São irmãos", "São vilões diferentes", "São nomes inspirados em um feitiço de Cinderela", "São mestres de artes marciais"],
+                correta: 2
+            },
+            {
+                pergunta: "Quem treinou Goku durante sua infância?",
+                alternativas: ["Mestre Roshi", "Tenshinhan", "Piccolo", "Kami"],
+                correta: 0
+            },
+            {
+                pergunta: "Qual personagem ficou famoso por ser considerado 'inútil' pelos fãs, apesar de ser importante?",
+                alternativas: ["Yamcha", "Krillin", "Tien", "Chiaotzu"],
+                correta: 0
+            },
+            {
+                pergunta: "Qual é a principal arma do Android 18?",
+                alternativas: ["Galick Gun", "Golpe de energia", "Luta corpo a corpo", "Espada"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual personagem foi inspirado no Jackie Chan?",
+                alternativas: ["Goku", "Kuririn", "Yamcha", "Trunks"],
+                correta: 2
+            },
+            {
+                pergunta: "Quem criou Dragon Ball?",
+                alternativas: ["Eiichiro Oda", "Masashi Kishimoto", "Akira Toriyama", "Yoshihiro Togashi"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual é a técnica usada para medir o poder de luta dos personagens?",
+                alternativas: ["Radar Dragon Ball", "Scouter", "Sensor Kai", "Detector de Energia"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual personagem tem a habilidade de teletransporte (Instant Transmission)?",
+                alternativas: ["Vegeta", "Goku", "Gohan", "Trunks"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual o nome do planeta onde Goku foi criado?",
+                alternativas: ["Planeta Vegeta", "Terra", "Namekusei", "Yardrat"],
+                correta: 1
+            },
+            {
+                pergunta: "Quem foi o criador do Android 17 e Android 18?",
+                alternativas: ["Dr. Gero", "Dr. Briefs", "Dr. Mashirito", "Dr. Myuu"],
+                correta: 0
+            },
+            {
+                pergunta: "Qual o nome do príncipe Saiyajin?",
+                alternativas: ["Kakarotto", "Vegeta", "Broly", "Raditz"],
+                correta: 1
             }
+        ];
+
+        let perguntaAtual = 0;
+        let pontos = 0;
+        let perguntasUsadas = [];
+        let respostaSelecionada = null;
+
+        function mostrarSecao(secaoId) {
+            document.getElementById('menu-inicial').style.display = 'none';
+            document.getElementById('jogo').style.display = 'none';
+            document.getElementById('sobre').style.display = 'none';
+            document.getElementById(secaoId).style.display = 'block';
+        }
+
+        function iniciarJogo() {
+            mostrarSecao('jogo');
+            pontos = 0;
+            perguntasUsadas = [];
+            document.getElementById('pontos').textContent = pontos;
+            proximaPergunta();
+        }
+
+        function mostrarSobre() {
+            mostrarSecao('sobre');
+        }
+
+        function voltarMenu() {
+            mostrarSecao('menu-inicial');
+        }
+
+        function proximaPergunta() {
+            // Esconder resultado anterior
+            document.getElementById('resultado').style.display = 'none';
             
-            function loadQuestion() {
-                answered = false;
-                nextBtn.classList.add('hidden');
-                
-                const question = questions[currentQuestion];
-                questionCounter.textContent = `Pergunta ${currentQuestion + 1}/${questions.length}`;
-                questionElement.textContent = question.question;
-                
-                // Update progress bar
-                progressBar.style.width = `${(currentQuestion / questions.length) * 100}%`;
-                
-                // Clear previous options
-                while (optionsContainer.firstChild) {
-                    optionsContainer.removeChild(optionsContainer.firstChild);
-                }
-                
-                // Add new options
-                const letters = ['A', 'B', 'C', 'D'];
-                question.options.forEach((option, index) => {
-                    const optionElement = document.createElement('div');
-                    optionElement.className = 'option';
-                    optionElement.dataset.index = index;
-                    
-                    const optionLetter = document.createElement('div');
-                    optionLetter.className = 'option-letter';
-                    optionLetter.textContent = letters[index];
-                    
-                    const optionText = document.createElement('div');
-                    optionText.className = 'option-text';
-                    optionText.textContent = option;
-                    
-                    optionElement.appendChild(optionLetter);
-                    optionElement.appendChild(optionText);
-                    optionsContainer.appendChild(optionElement);
-                    
-                    optionElement.addEventListener('click', () => selectOption(index));
-                });
+            // Verificar se ainda há perguntas disponíveis
+            if (perguntasUsadas.length >= perguntas.length) {
+                // Fim do jogo - todas as perguntas foram respondidas
+                document.getElementById('pergunta-container').innerHTML = 
+                    '<table cellpadding="20" cellspacing="0" border="2" width="100%" bgcolor="#E6FFE6"><tr><td align="center">' +
+                    '<h2>🎉 Parabéns! Você completou o quiz!</h2><p><big><b>Pontuação final: ' + pontos + ' pontos</b></big></p>' +
+                    '</td></tr></table>';
+                document.getElementById('resultado').innerHTML = 
+                    '<br><table cellpadding="15" cellspacing="0" border="2" width="100%" bgcolor="#F0F8FF"><tr><td align="center">' +
+                    '<button type="button" onclick="jogarNovamente()"><big><b>🔄 Jogar Novamente</b></big></button> ' +
+                    '<button type="button" onclick="voltarMenu()"><big><b>🏠 Voltar ao Início</b></big></button>' +
+                    '</td></tr></table>';
+                document.getElementById('resultado').style.display = 'block';
+                return;
             }
+
+            // Escolher pergunta aleatória que ainda não foi usada
+            let indicePergunta;
+            do {
+                indicePergunta = Math.floor(Math.random() * perguntas.length);
+            } while (perguntasUsadas.includes(indicePergunta));
+
+            perguntasUsadas.push(indicePergunta);
+            perguntaAtual = indicePergunta;
+
+            // Exibir pergunta
+            const pergunta = perguntas[perguntaAtual];
+            document.getElementById('pergunta-texto').textContent = pergunta.pergunta;
+
+            // Criar alternativas
+            const alternativasHtml = pergunta.alternativas.map((alt, index) => 
+                '<li><label><input type="radio" name="resposta" value="' + index + '" onchange="selecionarResposta(' + index + ')"> ' + alt + '</label></li>'
+            ).join('');
+
+            document.getElementById('alternativas').innerHTML = alternativasHtml;
             
-            function selectOption(index) {
-                if (answered) return;
-                
-                answered = true;
-                const question = questions[currentQuestion];
-                const options = document.querySelectorAll('.option');
-                
-                // Show correct and incorrect answers
-                options.forEach(option => {
-                    const optionIndex = parseInt(option.dataset.index);
-                    if (optionIndex === question.correctIndex) {
-                        option.classList.add('correct');
-                    } else if (optionIndex === index && optionIndex !== question.correctIndex) {
-                        option.classList.add('incorrect');
-                    }
-                });
-                
-                // Update score and lives
-                if (index === question.correctIndex) {
-                    // Correct answer
-                    score += 100;
-                    scoreElement.textContent = `Pontuação: ${score}`;
-                } else {
-                    // Incorrect answer
-                    lives--;
-                    livesElement.textContent = `Vidas: ${lives}`;
-                    
-                    if (lives <= 0) {
-                        setTimeout(endGame, 1500);
-                        return;
-                    }
-                }
-                
-                // Show next button or end game
-                if (currentQuestion < questions.length - 1) {
-                    nextBtn.classList.remove('hidden');
-                } else {
-                    setTimeout(endGame, 1500);
-                }
+            // Esconder botão responder inicialmente
+            document.getElementById('btn-responder').style.display = 'none';
+            respostaSelecionada = null;
+        }
+
+        function selecionarResposta(indice) {
+            respostaSelecionada = indice;
+            document.getElementById('btn-responder').style.display = 'inline-block';
+        }
+
+        function responder() {
+            if (respostaSelecionada === null) return;
+
+            const pergunta = perguntas[perguntaAtual];
+            const acertou = respostaSelecionada === pergunta.correta;
+
+            if (acertou) {
+                pontos += 10;
+                document.getElementById('pontos').textContent = pontos;
+                document.getElementById('mensagem-resultado').textContent = '✅ Correto! +10 pontos';
+                document.getElementById('btn-proxima').style.display = 'inline-block';
+                document.getElementById('btn-jogar-novamente').style.display = 'none';
+            } else {
+                document.getElementById('mensagem-resultado').textContent = '❌ Que pena, você errou!';
+                document.getElementById('btn-proxima').style.display = 'none';
+                document.getElementById('btn-jogar-novamente').style.display = 'inline-block';
             }
-            
-            function nextQuestion() {
-                currentQuestion++;
-                loadQuestion();
-            }
-            
-            function endGame() {
-                gameScreen.classList.add('hidden');
-                resultScreen.classList.remove('hidden');
-                
-                finalScoreElement.textContent = `Pontuação: ${score}`;
-                
-                // Set result message based on score
-                let message = '';
-                const maxScore = questions.length * 100;
-                const percentage = (score / maxScore) * 100;
-                
-                if (percentage === 100) {
-                    message = 'Perfeito! Você é um especialista em códigos de comunicação!';
-                    createConfetti();
-                } else if (percentage >= 80) {
-                    message = 'Excelente! Você domina muito bem os códigos de comunicação!';
-                    createConfetti();
-                } else if (percentage >= 60) {
-                    message = 'Bom trabalho! Você conhece bem os códigos de comunicação.';
-                } else if (percentage >= 40) {
-                    message = 'Razoável. Você tem conhecimentos básicos sobre códigos de comunicação.';
-                } else {
-                    message = 'Você precisa praticar mais. Continue estudando os códigos de comunicação!';
-                }
-                
-                resultMessageElement.textContent = message;
-            }
-            
-            function resetGame() {
-                currentQuestion = 0;
-                score = 0;
-                lives = 3;
-                
-                scoreElement.textContent = `Pontuação: ${score}`;
-                livesElement.textContent = `Vidas: ${lives}`;
-                
-                resultScreen.classList.add('hidden');
-                gameScreen.classList.remove('hidden');
-                
-                loadQuestion();
-            }
-            
-            function createConfetti() {
-                const confettiCount = 100;
-                const colors = ['#ffc107', '#f44336', '#2196f3', '#4caf50', '#9c27b0', '#ff9800'];
-                
-                for (let i = 0; i < confettiCount; i++) {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = `${Math.random() * 100}vw`;
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.width = `${Math.random() * 10 + 5}px`;
-                    confetti.style.height = confetti.style.width;
-                    confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
-                    confetti.style.animationDelay = `${Math.random() * 2}s`;
-                    
-                    document.body.appendChild(confetti);
-                    
-                    setTimeout(() => {
-                        confetti.remove();
-                    }, 5000);
-                }
-            }
-        });
+
+            document.getElementById('resultado').style.display = 'block';
+            document.getElementById('btn-responder').style.display = 'none';
+        }
+
+        function jogarNovamente() {
+            iniciarJogo();
+        }
+
+        // Inicializar com menu principal visível
+        mostrarSecao('menu-inicial');
     </script>
 </body>
 </html>
