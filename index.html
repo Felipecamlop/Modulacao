@@ -80,6 +80,9 @@
                                     <tr bgcolor="#F5F5F5">
                                         <td align="center">
                                             <h3 id="mensagem-resultado"></h3>
+                                            <div id="resposta-correta" style="display: none;">
+                                                <p><b>A resposta correta era:</b> <span id="texto-resposta-correta"></span></p>
+                                            </div>
                                             <button type="button" id="btn-proxima" onclick="proximaPergunta()" style="display: none;"><big><b>➡️ Próxima Pergunta</b></big></button>
                                             <button type="button" id="btn-jogar-novamente" onclick="jogarNovamente()" style="display: none;"><big><b>🔄 Jogar Novamente</b></big></button>
                                         </td>
@@ -387,6 +390,7 @@
         let pontos = 0;
         let perguntasUsadas = [];
         let respostaSelecionada = null;
+        let jogoAtivo = true;
 
         function mostrarSecao(secaoId) {
             document.getElementById('menu-inicial').style.display = 'none';
@@ -399,6 +403,7 @@
             mostrarSecao('jogo');
             pontos = 0;
             perguntasUsadas = [];
+            jogoAtivo = true;
             document.getElementById('pontos').textContent = pontos;
             proximaPergunta();
         }
@@ -411,9 +416,24 @@
             mostrarSecao('menu-inicial');
         }
 
+        function desabilitarAlternativas() {
+            const inputs = document.querySelectorAll('input[name="resposta"]');
+            inputs.forEach(input => {
+                input.disabled = true;
+            });
+        }
+
+        function habilitarAlternativas() {
+            const inputs = document.querySelectorAll('input[name="resposta"]');
+            inputs.forEach(input => {
+                input.disabled = false;
+            });
+        }
+
         function proximaPergunta() {
             // Esconder resultado anterior
             document.getElementById('resultado').style.display = 'none';
+            document.getElementById('resposta-correta').style.display = 'none';
             
             // Verificar se ainda há perguntas disponíveis
             if (perguntasUsadas.length >= perguntas.length) {
@@ -451,18 +471,24 @@
 
             document.getElementById('alternativas').innerHTML = alternativasHtml;
             
+            // Habilitar alternativas se o jogo estiver ativo
+            if (jogoAtivo) {
+                habilitarAlternativas();
+            }
+            
             // Esconder botão responder inicialmente
             document.getElementById('btn-responder').style.display = 'none';
             respostaSelecionada = null;
         }
 
         function selecionarResposta(indice) {
+            if (!jogoAtivo) return;
             respostaSelecionada = indice;
             document.getElementById('btn-responder').style.display = 'inline-block';
         }
 
         function responder() {
-            if (respostaSelecionada === null) return;
+            if (respostaSelecionada === null || !jogoAtivo) return;
 
             const pergunta = perguntas[perguntaAtual];
             const acertou = respostaSelecionada === pergunta.correta;
@@ -470,11 +496,17 @@
             if (acertou) {
                 pontos += 10;
                 document.getElementById('pontos').textContent = pontos;
-                document.getElementById('mensagem-resultado').textContent = '✅ Correto! +10 pontos';
+                document.getElementById('mensagem-resultado').innerHTML = '✅ <span style="color: green;">Correto! +10 pontos</span>';
                 document.getElementById('btn-proxima').style.display = 'inline-block';
                 document.getElementById('btn-jogar-novamente').style.display = 'none';
             } else {
-                document.getElementById('mensagem-resultado').textContent = '❌ Que pena, você errou!';
+                // Desabilitar todas as alternativas quando errar
+                jogoAtivo = false;
+                desabilitarAlternativas();
+                
+                document.getElementById('mensagem-resultado').innerHTML = '❌ <span style="color: red;">Que pena, você errou!</span>';
+                document.getElementById('texto-resposta-correta').textContent = pergunta.alternativas[pergunta.correta];
+                document.getElementById('resposta-correta').style.display = 'block';
                 document.getElementById('btn-proxima').style.display = 'none';
                 document.getElementById('btn-jogar-novamente').style.display = 'inline-block';
             }
