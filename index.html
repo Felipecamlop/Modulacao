@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -30,9 +29,39 @@
                             <table cellpadding="15" cellspacing="0" border="1" width="100%">
                                 <tr bgcolor="#E6F3FF">
                                     <td align="center">
-                                        <h2>🎯 Bem-vindo ao Quiz Dragon Ball!</h2>
-                                        <p><big>Teste seus conhecimentos sobre o universo Dragon Ball!</big></p>
+                                        <h2>🎯 Bem-vindo ao Quiz!</h2>
+                                        <p><big>Teste seus conhecimentos em diversos temas!</big></p>
                                         <p><i>Clique em "Jogar" no menu acima para começar.</i></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div id="selecao-tema" style="display: none;">
+                            <table cellpadding="15" cellspacing="0" border="1" width="100%">
+                                <tr bgcolor="#E6F3FF">
+                                    <td align="center">
+                                        <h2>🎯 Escolha um tema para iniciar o Quiz:</h2>
+                                        <br>
+                                        <table cellpadding="10" cellspacing="10">
+                                            <tr>
+                                                <td><button onclick="selecionarTema('dragonball')"><big><b>🐉 Dragon Ball</b></big></button></td>
+                                                <td><button onclick="selecionarTema('cartoon')"><big><b>📺 Cartoon Network</b></big></button></td>
+                                                <td><button onclick="selecionarTema('pokemon')"><big><b>⚡ Pokemon</b></big></button></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div id="em-breve" style="display: none;">
+                            <table cellpadding="20" cellspacing="0" border="2" width="100%">
+                                <tr bgcolor="#FFF3CD">
+                                    <td align="center">
+                                        <h2>🚧 Em breve essa opção estará disponível para jogar</h2>
+                                        <br>
+                                        <button onclick="voltarMenu()"><big><b>🏠 Voltar ao Início</b></big></button>
                                     </td>
                                 </tr>
                             </table>
@@ -394,18 +423,28 @@
 
         function mostrarSecao(secaoId) {
             document.getElementById('menu-inicial').style.display = 'none';
+            document.getElementById('selecao-tema').style.display = 'none';
+            document.getElementById('em-breve').style.display = 'none';
             document.getElementById('jogo').style.display = 'none';
             document.getElementById('sobre').style.display = 'none';
             document.getElementById(secaoId).style.display = 'block';
         }
 
         function iniciarJogo() {
-            mostrarSecao('jogo');
-            pontos = 0;
-            perguntasUsadas = [];
-            jogoAtivo = true;
-            document.getElementById('pontos').textContent = pontos;
-            proximaPergunta();
+            mostrarSecao('selecao-tema');
+        }
+
+        function selecionarTema(tema) {
+            if (tema === 'dragonball') {
+                mostrarSecao('jogo');
+                pontos = 0;
+                perguntasUsadas = [];
+                jogoAtivo = true;
+                document.getElementById('pontos').textContent = pontos;
+                proximaPergunta();
+            } else {
+                mostrarSecao('em-breve');
+            }
         }
 
         function mostrarSobre() {
@@ -516,7 +555,7 @@
         }
 
         function jogarNovamente() {
-            iniciarJogo();
+            selecionarTema('dragonball');
         }
 
         // Inicializar com menu principal visível
